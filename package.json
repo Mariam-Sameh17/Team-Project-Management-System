@@ -1,0 +1,30 @@
+{
+  "name": "team-project-management-system",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mariam-Sameh17/Team-Project-Management-System.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mariam-Sameh17/Team-Project-Management-System/issues"
+  },
+  "homepage": "https://github.com/Mariam-Sameh17/Team-Project-Management-System#readme",
+  "description": "",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^18.0.3",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.10.2",
+    "morgan": "^1.12.1",
+    "validator": "^13.15.35"
+  }
+}

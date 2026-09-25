@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 
 const userRouter = require("./routes/userRoutes");
+const projectRouter = require("./routes/projectRoutes");
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use("/api/user", userRouter);
+app.use("/api/users", userRouter);
+app.use("/api/projects", projectRouter);
 
 module.exports = app;

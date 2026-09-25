@@ -2,6 +2,7 @@ const { promisify } = require("util");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const Project = require("../models/projectModel");
 
 const finalResponse = (user, res, statusCode) => {
   const userName = user.userName;
@@ -36,6 +37,7 @@ exports.signup = async (req, res, next) => {
     res.status(400).json({
       status: "fail",
       message: err.message,
+      source: "signup",
     });
   }
 };
@@ -47,6 +49,7 @@ exports.login = async (req, res, next) => {
     return res.status(400).json({
       status: "fail",
       message: "Please provide your username or email and password",
+      source: "login",
     });
   }
 
@@ -60,6 +63,7 @@ exports.login = async (req, res, next) => {
     return res.status(401).json({
       status: "fail",
       message: "Incorrect (userName/email) or Password",
+      source: "login",
     });
   }
 
@@ -86,6 +90,7 @@ exports.protect = async (req, res, next) => {
     return res.status(401).json({
       status: "fail",
       message: "Login first to access this page",
+      source: "protect",
     });
   let decoded;
   try {
@@ -94,6 +99,7 @@ exports.protect = async (req, res, next) => {
     return res.status(401).json({
       status: "fail",
       message: err.message,
+      source: "protect",
     });
   }
 
@@ -105,9 +111,42 @@ exports.protect = async (req, res, next) => {
     return res.status(401).json({
       status: "fail",
       message: "The User no longer exist",
+      source: "protect",
     });
   }
 
   req.user = user;
   next();
+};
+
+exports.restrictToOwner = async (req, res, next) => {
+  try {
+    const body = req.body || {};
+    const query = req.query || {};
+    const projectName = body.name || query.name;
+    console.log(projectName, !projectName);
+    if (!projectName) {
+      throw new Error("Project name is required");
+    }
+
+    let project = await Project.findOne({ name: projectName });
+    if (project && req.user.id != project.owner.toString()) {
+      return res.status(403).json({
+        status: "fail",
+        message: "You don't have access to this project",
+        source: "restriction",
+      });
+    }
+    if (!project) {
+      throw new Error("Project not found");
+    }
+    req.project = project;
+    next();
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+      source: "restriction",
+    });
+  }
 };

@@ -9,7 +9,7 @@ router.post("/signup", authController.signup);
 
 router.post("/login", authController.login);
 
-router.get("/logout", authController.logout);
+router.get("/logout", authController.protect, authController.logout);
 
 router.get("/profile", authController.protect, userController.profile);
 
