@@ -12,3 +12,27 @@ exports.profile = async (req, res) => {
     },
   });
 };
+
+exports.findUsers = async (req, res, next) => {
+  try {
+    const query = req.query || {};
+    const filter = {};
+
+    if (query.name) {
+      filter.userName = { $regex: query.name, $options: "i" };
+    }
+
+    const users = await User.find(filter).select("name email phone");
+
+    res.status(200).json({
+      status: "success",
+      data: { users },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+      source: "findUsers",
+    });
+  }
+};

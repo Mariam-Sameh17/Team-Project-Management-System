@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 
 const userRouter = require("./routes/userRoutes");
 const projectRouter = require("./routes/projectRoutes");
+const tasktRouter = require("./routes/taskRoutes");
 
 const app = express();
 
@@ -17,5 +18,6 @@ app.use(cookieParser());
 
 app.use("/api/users", userRouter);
 app.use("/api/projects", projectRouter);
+app.use("/api/tasks", tasktRouter);
 
 module.exports = app;

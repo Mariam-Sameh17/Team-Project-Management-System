@@ -3,42 +3,51 @@ const express = require("express");
 const router = express.Router();
 
 const authController = require("../controllers/authController");
-const projectController = require("../controllers/projectController");
+const taskController = require("../controllers/taskController");
 
-router.post("/create", authController.protect, projectController.createProject);
+router.post(
+  "/create",
+  authController.protect,
+  authController.ownerRestriction,
+  taskController.createTask,
+);
 
 router.patch(
   "/update",
   authController.protect,
   authController.ownerRestriction,
-  projectController.updateProject,
+  taskController.updateTask,
 );
 
-router.get("/find", authController.protect, projectController.findProjects);
-
 router.get(
-  "/findOne",
+  "/find",
   authController.protect,
   authController.ownerRestriction,
-  projectController.findProject,
+  taskController.findTasks,
+);
+router.get(
+  "/findOne/:title",
+  authController.protect,
+  authController.ownerRestriction,
+  taskController.findTask,
 );
 
 router.delete(
   "/delete",
   authController.protect,
   authController.ownerRestriction,
-  projectController.deleteProject,
+  taskController.deleteTask,
 );
 router.patch(
-  "/addMember",
+  "/assignTask",
   authController.protect,
   authController.ownerRestriction,
-  projectController.addMember,
+  taskController.assignTask,
 );
 router.patch(
-  "/removeMember",
+  "/unassignTask",
   authController.protect,
   authController.ownerRestriction,
-  projectController.removeMember,
+  taskController.unassignTask,
 );
 module.exports = router;

@@ -13,4 +13,6 @@ router.get("/logout", authController.protect, authController.logout);
 
 router.get("/profile", authController.protect, userController.profile);
 
+router.get("/find", authController.protect, userController.findUsers);
+
 module.exports = router;

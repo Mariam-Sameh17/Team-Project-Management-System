@@ -36,13 +36,16 @@ const taskSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "User",
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
   },
   { timestamps: true },
 );
-
+taskSchema.set("toJSON", {
+  transform: (doc, ret) => {
+    delete ret.__v;
+    delete ret._id;
+    return ret;
+  },
+});
+taskSchema.index({ project: 1, title: 1 }, { unique: true });
 const Task = mongoose.model("Task", taskSchema);
 module.exports = Task;

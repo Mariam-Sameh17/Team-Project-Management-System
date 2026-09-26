@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const Project = require("../models/projectModel");
+const Task = require("../models/taskModel");
 
 const finalResponse = (user, res, statusCode) => {
   const userName = user.userName;
@@ -119,25 +120,27 @@ exports.protect = async (req, res, next) => {
   next();
 };
 
-exports.restrictToOwner = async (req, res, next) => {
+exports.ownerRestriction = async (req, res, next) => {
   try {
     const body = req.body || {};
     const query = req.query || {};
     const projectName = body.name || query.name;
-    console.log(projectName, !projectName);
     if (!projectName) {
       throw new Error("Project name is required");
     }
 
     let project = await Project.findOne({ name: projectName });
-    if (project && req.user.id != project.owner.toString()) {
-      return res.status(403).json({
-        status: "fail",
-        message: "You don't have access to this project",
-        source: "restriction",
-      });
-    }
-    if (!project) {
+    if (project) {
+      const isOwner = req.user.id == project.owner.toString();
+      const isMember = project.members.some((m) => m.toString() == req.user.id);
+      if (!isOwner && !isMember) {
+        return res.status(403).json({
+          status: "fail",
+          message: "You don't have access to this project",
+          source: "ownerRestriction",
+        });
+      }
+    } else {
       throw new Error("Project not found");
     }
     req.project = project;
@@ -146,7 +149,7 @@ exports.restrictToOwner = async (req, res, next) => {
     res.status(400).json({
       status: "fail",
       message: err.message,
-      source: "restriction",
+      source: "ownerRestriction",
     });
   }
 };
