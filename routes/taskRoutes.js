@@ -1,6 +1,6 @@
 const express = require("express");
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 const authController = require("../controllers/authController");
 const taskController = require("../controllers/taskController");
@@ -13,7 +13,7 @@ router.post(
 );
 
 router.patch(
-  "/update",
+  "/update/:taskId",
   authController.protect,
   authController.ownerRestriction,
   taskController.updateTask,
@@ -26,26 +26,26 @@ router.get(
   taskController.findTasks,
 );
 router.get(
-  "/findOne/:title",
+  "/findOne/:taskId",
   authController.protect,
   authController.ownerRestriction,
   taskController.findTask,
 );
 
 router.delete(
-  "/delete",
+  "/delete/:taskId",
   authController.protect,
   authController.ownerRestriction,
   taskController.deleteTask,
 );
 router.patch(
-  "/assignTask",
+  "/assign/:taskId",
   authController.protect,
   authController.ownerRestriction,
   taskController.assignTask,
 );
 router.patch(
-  "/unassignTask",
+  "/unassign/:taskId",
   authController.protect,
   authController.ownerRestriction,
   taskController.unassignTask,

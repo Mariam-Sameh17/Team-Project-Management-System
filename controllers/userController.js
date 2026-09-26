@@ -22,7 +22,7 @@ exports.findUsers = async (req, res, next) => {
       filter.userName = { $regex: query.name, $options: "i" };
     }
 
-    const users = await User.find(filter).select("name email phone");
+    const users = await User.find(filter).select("userName email phone");
 
     res.status(200).json({
       status: "success",

@@ -24,7 +24,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
     required: [true, "Phone is required"],
-    unique: [true, "This phone number is already used"],
     match: [/^\d{11}$/, "Phone number must be 11 digits"],
   },
   password: {

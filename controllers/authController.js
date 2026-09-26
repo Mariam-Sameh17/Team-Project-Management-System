@@ -122,14 +122,11 @@ exports.protect = async (req, res, next) => {
 
 exports.ownerRestriction = async (req, res, next) => {
   try {
-    const body = req.body || {};
-    const query = req.query || {};
-    const projectName = body.name || query.name;
-    if (!projectName) {
-      throw new Error("Project name is required");
+    const projectId = req.params.id || req.params.projectId;
+    if (!projectId || projectId == ":id" || projectId == ":projectId") {
+      throw new Error("Project id is required");
     }
-
-    let project = await Project.findOne({ name: projectName });
+    let project = await Project.findById(projectId);
     if (project) {
       const isOwner = req.user.id == project.owner.toString();
       const isMember = project.members.some((m) => m.toString() == req.user.id);
@@ -146,6 +143,13 @@ exports.ownerRestriction = async (req, res, next) => {
     req.project = project;
     next();
   } catch (err) {
+    if (err.name === "CastError") {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid project id",
+        source: "ownerRestriction",
+      });
+    }
     res.status(400).json({
       status: "fail",
       message: err.message,

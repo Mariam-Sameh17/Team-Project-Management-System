@@ -11,8 +11,8 @@ exports.createProject = async (req, res, next) => {
       owner: req.user.id,
     });
     await project.populate([
-      { path: "owner", select: "name email phone" },
-      { path: "members", select: "name email phone" },
+      { path: "owner", select: "userName email phone" },
+      { path: "members", select: "userName email phone" },
     ]);
     res.status(201).json({
       status: "success",
@@ -33,22 +33,21 @@ exports.updateProject = async (req, res, next) => {
   try {
     const projectId = req.project._id;
 
-    if (!(req.body.newName || req.body.newDescription)) {
+    if (!(req.body.name || req.body.description)) {
       throw new Error("Enter the new name or description");
     }
 
-    const newName = req.body.newName;
-    const newDescription = req.body.newDescription;
+    const name = req.body.name;
+    const description = req.body.description;
     const updates = {};
-    if (newName) updates.name = newName;
-    if (newDescription) updates.description = newDescription;
+    if (name) updates.name = name;
+    if (description) updates.description = description;
 
     const project = await Project.findByIdAndUpdate(projectId, updates, {
       new: true,
       runValidators: true,
     });
-    project.owner = undefined;
-    project.members = undefined;
+
     res.status(200).json({
       status: "success",
       data: { project },
@@ -72,12 +71,22 @@ exports.findProjects = async (req, res, next) => {
       filter.name = { $regex: query.name, $options: "i" };
     }
 
-    const projects = await Project.find(filter).populate([
-      { path: "owner", select: "name email phone " },
-      { path: "members", select: "name email phone " },
-    ]);
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const projects = await Project.find(filter)
+      .populate([
+        { path: "owner", select: "userName email phone" },
+        { path: "members", select: "userName email phone" },
+      ])
+      .skip(skip)
+      .limit(limit);
+    const total = await Project.countDocuments(filter);
+
     res.status(200).json({
       status: "success",
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) },
       data: { projects },
     });
   } catch (err) {
@@ -93,8 +102,8 @@ exports.findProject = async (req, res, next) => {
   try {
     const project = req.project;
     await project.populate([
-      { path: "owner", select: "name email phone " },
-      { path: "members", select: "name email phone " },
+      { path: "owner", select: "userName email phone " },
+      { path: "members", select: "userName email phone " },
     ]);
 
     const stats = await Task.aggregate([
@@ -140,7 +149,8 @@ exports.deleteProject = async (req, res, next) => {
 exports.addMember = async (req, res, next) => {
   try {
     const project = req.project;
-    const userId = req.body.userId;
+    const body = req.body || {};
+    const userId = body.userId;
 
     if (!userId) {
       return res.status(400).json({
@@ -170,13 +180,20 @@ exports.addMember = async (req, res, next) => {
 
     project.members.push(userId);
     await project.save();
-    await project.populate("members", "name email phone");
+    await project.populate("members", "userName email phone");
 
     res.status(200).json({
       status: "success",
       data: { project },
     });
   } catch (err) {
+    if (err.name === "CastError") {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid user id",
+        source: "addMember",
+      });
+    }
     res.status(400).json({
       status: "fail",
       message: err.message,
@@ -188,12 +205,29 @@ exports.addMember = async (req, res, next) => {
 exports.removeMember = async (req, res, next) => {
   try {
     const project = req.project;
-    const userId = req.body.userId;
+    const body = req.body || {};
+    const userId = body.userId;
+
+    if (!userId) {
+      return res.status(400).json({
+        status: "fail",
+        message: "User id is required",
+        source: "removeMember",
+      });
+    }
 
     if (userId === project.owner.toString()) {
       return res.status(400).json({
         status: "fail",
         message: "Cannot remove the project owner",
+        source: "removeMember",
+      });
+    }
+    const alreadyMember = project.members.some((m) => m.toString() === userId);
+    if (!alreadyMember) {
+      return res.status(400).json({
+        status: "fail",
+        message: "User is not a member of this project",
         source: "removeMember",
       });
     }
@@ -203,7 +237,7 @@ exports.removeMember = async (req, res, next) => {
     );
     project.members = project.members.filter((m) => m.toString() !== userId);
     await project.save();
-    await project.populate("members", "name email phone");
+    await project.populate("members", "userName email phone");
 
     res.status(200).json({
       status: "success",

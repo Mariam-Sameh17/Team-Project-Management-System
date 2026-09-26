@@ -35,26 +35,57 @@ exports.createTask = async (req, res, next) => {
 
 exports.updateTask = async (req, res, next) => {
   try {
-    const taskTitle = req.body.title;
-    const { newTitle, description, status, priority } = req.body;
-    if (!(newTitle || description || status || priority)) {
+    const taskId = req.params.taskId;
+    if (!taskId || taskId == ":taskId") {
+      throw new Error("Task id is required");
+    }
+
+    const body = req.body || {};
+    const { title, description, status, priority } = body;
+    if (!(title || description || status || priority)) {
       throw new Error("Enter the feild you want to update");
     }
 
-    const updates = { title: newTitle, description, status, priority };
+    const updates = {};
+    if (title) updates.title = title;
+    if (description) updates.description = description;
+    if (status) updates.status = status;
+    if (priority) updates.priority = priority;
 
-    const project = req.project;
-    const task = await Task.findOneAndUpdate(
-      { title: taskTitle, project: project._id },
-      updates,
-      { new: true, runValidators: true },
-    );
+    const task = await Task.findByIdAndUpdate(taskId, updates, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!task) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Task not found",
+        source: "updateTask",
+      });
+    }
 
     res.status(200).json({
       status: "success",
       data: { task },
     });
   } catch (err) {
+    if (err.name === "CastError") {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid task id",
+        source: "updateTask",
+      });
+    }
+
+    if (err.code === 11000) {
+      return res.status(400).json({
+        status: "fail",
+        message: "This task title is already used in this project",
+        source: "updateTask",
+      });
+    }
+
     res.status(400).json({
       status: "fail",
       message: err.message,
@@ -71,9 +102,23 @@ exports.findTasks = async (req, res, next) => {
       filter.title = { $regex: query.title, $options: "i" };
     }
 
-    const tasks = await Task.find(filter);
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const skip = (page - 1) * limit;
+    if (query.status) filter.status = query.status;
+    if (query.priority) filter.priority = query.priority;
+
+    const tasks = await Task.find(filter).skip(skip).limit(limit);
+    const total = await Task.countDocuments(filter);
+
     res.status(200).json({
       status: "success",
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+      },
       data: { tasks },
     });
   } catch (err) {
@@ -87,17 +132,32 @@ exports.findTasks = async (req, res, next) => {
 
 exports.findTask = async (req, res, next) => {
   try {
-    query = req.query || {};
-    const { title } = query;
-    if (!title) {
-      throw new Error("Task title is required");
+    const taskId = req.params.taskId;
+    if (!taskId || taskId == ":taskId") {
+      throw new Error("Task id is required");
     }
-    const task = await Task.findOne({ project: req.project._id, title: title });
+
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Task not found",
+        source: "findTask",
+      });
+    }
     res.status(200).json({
       status: "success",
       data: { task },
     });
   } catch (err) {
+    if (err.name === "CastError") {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid task id",
+        source: "updateTask",
+      });
+    }
     res.status(400).json({
       status: "fail",
       message: err.message,
@@ -108,32 +168,51 @@ exports.findTask = async (req, res, next) => {
 
 exports.deleteTask = async (req, res, next) => {
   try {
-    const { title } = req.body;
-    if (!title) {
-      throw new Error("Task title is required");
+    const taskId = req.params.taskId;
+    if (!taskId || taskId == ":taskId") {
+      throw new Error("Task id is required");
     }
-    await Task.deleteOne({ project: req.project._id, title: title });
+    const task = await Task.findByIdAndDelete(taskId);
+    if (!task) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Task not found",
+        source: "findTask",
+      });
+    }
     res.status(200).json({
       status: "success",
     });
   } catch (err) {
+    if (err.name === "CastError") {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid task id",
+        source: "deleteTask",
+      });
+    }
     res.status(400).json({
       status: "fail",
       message: err.message,
-      source: "deleteProject",
+      source: "deleteTask",
     });
   }
 };
 
 exports.assignTask = async (req, res, next) => {
   try {
+    const taskId = req.params.taskId;
+    if (!taskId || taskId == ":taskId") {
+      throw new Error("Task id is required");
+    }
     const project = req.project;
-    const { taskId, userId } = req.body;
+    const body = req.body || {};
+    const { userId } = body;
 
-    if (!taskId || !userId) {
+    if (!userId) {
       return res.status(400).json({
         status: "fail",
-        message: "Task id and User id are required",
+        message: "User id is required",
         source: "assignTask",
       });
     }
@@ -162,13 +241,20 @@ exports.assignTask = async (req, res, next) => {
       });
     }
 
-    await task.populate("assignedTo", "name email phone");
+    await task.populate("assignedTo", "userName email phone");
 
     res.status(200).json({
       status: "success",
       data: { task },
     });
   } catch (err) {
+    if (err.name === "CastError") {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid task id",
+        source: "assignTask",
+      });
+    }
     res.status(400).json({
       status: "fail",
       message: err.message,
@@ -179,16 +265,11 @@ exports.assignTask = async (req, res, next) => {
 
 exports.unassignTask = async (req, res, next) => {
   try {
-    const project = req.project;
-    const { taskId } = req.body;
-
-    if (!taskId) {
-      return res.status(400).json({
-        status: "fail",
-        message: "Task id is required",
-        source: "unassignTask",
-      });
+    const taskId = req.params.taskId;
+    if (!taskId || taskId == ":taskId") {
+      throw new Error("Task id is required");
     }
+    const project = req.project;
 
     const task = await Task.findOneAndUpdate(
       { _id: taskId, project: project._id },
