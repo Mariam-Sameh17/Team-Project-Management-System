@@ -33,7 +33,8 @@ exports.updateProject = async (req, res, next) => {
   try {
     const projectId = req.project._id;
 
-    if (!(req.body.name || req.body.description)) {
+    const body = req.body || {};
+    if (!(body.name || body.description)) {
       throw new Error("Enter the new name or description");
     }
 
@@ -75,7 +76,9 @@ exports.findProjects = async (req, res, next) => {
     const limit = Number(query.limit) || 10;
     const skip = (page - 1) * limit;
 
+    const sortBy = query.sort ? query.sort.split(",").join(" ") : "-createdAt";
     const projects = await Project.find(filter)
+      .sort(sortBy)
       .populate([
         { path: "owner", select: "userName email phone" },
         { path: "members", select: "userName email phone" },
@@ -133,7 +136,7 @@ exports.findProject = async (req, res, next) => {
 exports.deleteProject = async (req, res, next) => {
   try {
     await Task.deleteMany({ project: req.project._id });
-    await Project.deleteOne({ name: req.project.name });
+    await Project.deleteOne({ _id: req.project._id });
     res.status(200).json({
       status: "success",
     });

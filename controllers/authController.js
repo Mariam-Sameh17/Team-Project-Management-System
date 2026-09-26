@@ -129,8 +129,7 @@ exports.ownerRestriction = async (req, res, next) => {
     let project = await Project.findById(projectId);
     if (project) {
       const isOwner = req.user.id == project.owner.toString();
-      const isMember = project.members.some((m) => m.toString() == req.user.id);
-      if (!isOwner && !isMember) {
+      if (!isOwner) {
         return res.status(403).json({
           status: "fail",
           message: "You don't have access to this project",
@@ -154,6 +153,44 @@ exports.ownerRestriction = async (req, res, next) => {
       status: "fail",
       message: err.message,
       source: "ownerRestriction",
+    });
+  }
+};
+
+exports.memberRestriction = async (req, res, next) => {
+  try {
+    const projectId = req.params.id || req.params.projectId;
+    if (!projectId || projectId == ":id" || projectId == ":projectId") {
+      throw new Error("Project id is required");
+    }
+    let project = await Project.findById(projectId);
+    if (project) {
+      const isOwner = req.user.id == project.owner.toString();
+      const isMember = project.members.some((m) => m.toString() == req.user.id);
+      if (!isOwner && !isMember) {
+        return res.status(403).json({
+          status: "fail",
+          message: "You don't have access to this project",
+          source: "memberRestriction",
+        });
+      }
+    } else {
+      throw new Error("Project not found");
+    }
+    req.project = project;
+    next();
+  } catch (err) {
+    if (err.name === "CastError") {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid project id",
+        source: "memberRestriction",
+      });
+    }
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+      source: "memberRestriction",
     });
   }
 };

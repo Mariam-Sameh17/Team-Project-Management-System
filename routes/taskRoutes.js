@@ -15,7 +15,7 @@ router.post(
 router.patch(
   "/update/:taskId",
   authController.protect,
-  authController.ownerRestriction,
+  authController.memberRestriction,
   taskController.updateTask,
 );
 

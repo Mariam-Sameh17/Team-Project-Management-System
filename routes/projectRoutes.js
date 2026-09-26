@@ -20,7 +20,7 @@ router.get("/find", authController.protect, projectController.findProjects);
 router.get(
   "/findOne/:id",
   authController.protect,
-  authController.ownerRestriction,
+  authController.memberRestriction,
   projectController.findProject,
 );
 

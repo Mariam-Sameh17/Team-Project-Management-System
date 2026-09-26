@@ -51,7 +51,20 @@ exports.updateTask = async (req, res, next) => {
     if (description) updates.description = description;
     if (status) updates.status = status;
     if (priority) updates.priority = priority;
-
+    const isOwner = req.user.id == req.project.owner.toString();
+    if (!isOwner) {
+      const task = await Task.findById(taskId);
+      let isAssigned;
+      if (task.assignedTo)
+        isAssigned = req.user.id == task.assignedTo.toString();
+      if (!isAssigned || !task.assignedTo) {
+        return res.status(403).json({
+          status: "fail",
+          message: "Only assigned member can edit task",
+          source: "updateTask",
+        });
+      }
+    }
     const task = await Task.findByIdAndUpdate(taskId, updates, {
       new: true,
       runValidators: true,
@@ -108,7 +121,8 @@ exports.findTasks = async (req, res, next) => {
     if (query.status) filter.status = query.status;
     if (query.priority) filter.priority = query.priority;
 
-    const tasks = await Task.find(filter).skip(skip).limit(limit);
+    const sortBy = query.sort ? query.sort.split(",").join(" ") : "-createdAt";
+    const tasks = await Task.find(filter).sort(sortBy).skip(skip).limit(limit);
     const total = await Task.countDocuments(filter);
 
     res.status(200).json({
@@ -155,7 +169,7 @@ exports.findTask = async (req, res, next) => {
       return res.status(400).json({
         status: "fail",
         message: "Invalid task id",
-        source: "updateTask",
+        source: "findTask",
       });
     }
     res.status(400).json({
