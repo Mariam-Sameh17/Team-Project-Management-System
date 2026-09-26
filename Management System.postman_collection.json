@@ -1,0 +1,595 @@
+{
+  "info": {
+    "_postman_id": "edb54147-0c24-41ee-b760-2f5c7ae24c94",
+    "name": "Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49206878",
+    "_collection_link": "https://go.postman.co/collection/49206878-edb54147-0c24-41ee-b760-2f5c7ae24c94?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "signup",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "userName",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "passConfirm",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "phone",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "612132d7-b4ad-40ac-9f89-4cb8b40ea133",
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}api/users/signup",
+              "host": ["{{URL}}api"],
+              "path": ["users", "signup"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "identifier",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "3af510be-c93c-481f-a605-94bc6c600f62"
+                },
+                {
+                  "key": "password",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "5d3328b4-a519-4956-b631-b51f3c938e2b"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}api/users/login",
+              "host": ["{{URL}}api"],
+              "path": ["users", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "logout",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}api/users/logout",
+              "host": ["{{URL}}api"],
+              "path": ["users", "logout"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}api/users/profile",
+              "host": ["{{URL}}api"],
+              "path": ["users", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "find",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}api/users/find?name=",
+              "host": ["{{URL}}api"],
+              "path": ["users", "find"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Project",
+      "item": [
+        {
+          "name": "create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "42fab6aa-f36b-4f8e-95b2-5eebd3a6a0ad"
+                },
+                {
+                  "key": "description",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "1dc5fcd9-e5c0-4842-bf41-325503a6a54c"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}api/projects/create",
+              "host": ["{{URL}}api"],
+              "path": ["projects", "create"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "e10506e5-975f-493e-8f0a-728abad13992"
+                },
+                {
+                  "key": "description",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "252b9027-c494-43ba-a7fd-fded1ec65245"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}api/projects/update/:id",
+              "host": ["{{URL}}api"],
+              "path": ["projects", "update", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "find many",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}api/projects/find",
+              "host": ["{{URL}}api"],
+              "path": ["projects", "find"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "find one",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}api/projects/findOne/:id",
+              "host": ["{{URL}}api"],
+              "path": ["projects", "findOne", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}api/projects/delete/:id",
+              "host": ["{{URL}}api"],
+              "path": ["projects", "delete", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "add member",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "userId",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "efb8bb2d-7970-4472-86ba-31a81c106980"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}api/projects/:id/addMember",
+              "host": ["{{URL}}api"],
+              "path": ["projects", ":id", "addMember"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "remove member",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "userId",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "7e8d8ba4-6b7e-4033-8e7d-0bfeb2b801af"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}api/projects/:id/removeMember",
+              "host": ["{{URL}}api"],
+              "path": ["projects", ":id", "removeMember"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Task",
+      "item": [
+        {
+          "name": "create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "title",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "e02e2a90-0241-46d8-8b65-4f494e653a06"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "b9fdc4f1-9336-401a-8d66-f0f8692a140c"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}api/projects/:projectId/tasks/create",
+              "host": ["{{URL}}api"],
+              "path": ["projects", ":projectId", "tasks", "create"],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "title",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "1b6d0d79-4900-413f-ae52-93df832f785e"
+                },
+                {
+                  "key": "description",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "2e9e76b6-2b0e-4f3d-9a96-512da07ead84"
+                },
+                {
+                  "key": "priority",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "77075b50-b397-4874-9363-fdf411e32346"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "d06631fc-9982-4bf8-883c-0a6b4e75ea0a"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}api/projects/:projectId/tasks/update/:taskId",
+              "host": ["{{URL}}api"],
+              "path": ["projects", ":projectId", "tasks", "update", ":taskId"],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": ""
+                },
+                {
+                  "key": "taskId",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "find many",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": []
+            },
+            "url": {
+              "raw": "{{URL}}api/projects/:projectId/tasks/find?page=&status=&priority=",
+              "host": ["{{URL}}api"],
+              "path": ["projects", ":projectId", "tasks", "find"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "priority",
+                  "value": "",
+                  "type": "text"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "find one",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}api/projects/:projectId/tasks/findOne/:taskId",
+              "host": ["{{URL}}api"],
+              "path": ["projects", ":projectId", "tasks", "findOne", ":taskId"],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": ""
+                },
+                {
+                  "key": "taskId",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}api/projects/:projectId/tasks/delete/:taskId",
+              "host": ["{{URL}}api"],
+              "path": ["projects", ":projectId", "tasks", "delete", ":taskId"],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": ""
+                },
+                {
+                  "key": "taskId",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "assign task",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "userId",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "718d11c2-e30d-4b71-b136-c9a60242ef95"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}api/projects/:projectId/tasks/assign/:taskId",
+              "host": ["{{URL}}api"],
+              "path": ["projects", ":projectId", "tasks", "assign", ":taskId"],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": ""
+                },
+                {
+                  "key": "taskId",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "unassign",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}api/projects/:projectId/tasks/unassign/:taskId",
+              "host": ["{{URL}}api"],
+              "path": [
+                "projects",
+                ":projectId",
+                "tasks",
+                "unassign",
+                ":taskId"
+              ],
+              "variable": [
+                {
+                  "key": "projectId",
+                  "value": ""
+                },
+                {
+                  "key": "taskId",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "URL",
+      "value": "https://team-project-management-system-fawn.vercel.app/"
+    }
+  ]
+}
